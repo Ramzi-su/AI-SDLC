@@ -6,6 +6,7 @@ import { api, LearningActivity } from '@/lib/api';
 import { useProjectStore } from '@/store/projectStore';
 import LearnPanel from '@/components/learn/LearnPanel';
 import PointsBadge from '@/components/learn/PointsBadge';
+import ModelPicker from '@/components/ModelPicker';
 import { LEVELS } from '@/components/learn/types';
 import RequireAuth from '@/components/auth/RequireAuth';
 import UserMenu from '@/components/auth/UserMenu';
@@ -30,13 +31,9 @@ function LearnHub() {
   const { selectedModel, bumpLearningProgress, learningProgressTick } = useProjectStore();
   const [level, setLevel] = useState<string>('Beginner');
   const [model, setModel] = useState(selectedModel || 'codellama:7b');
-  const [models, setModels] = useState<string[]>([]);
   const [history, setHistory] = useState<LearningActivity<Record<string, unknown>>[]>([]);
 
   useEffect(() => {
-    api.listModels()
-      .then(res => setModels((res.models as unknown as { name: string }[]).map(m => m.name)))
-      .catch(() => setModels([]));
     // Remembered per browser; not available during server rendering.
     try {
       const saved = localStorage.getItem(LEVEL_STORAGE_KEY);
@@ -59,8 +56,6 @@ function LearnHub() {
       // Not persisted; still applies for this visit.
     }
   };
-
-  const modelOptions = models.includes(model) ? models : [model, ...models];
 
   return (
     <div className={styles.page}>
@@ -85,9 +80,7 @@ function LearnHub() {
         </label>
         <label>
           AI model
-          <select className="input" value={model} onChange={e => setModel(e.target.value)}>
-            {modelOptions.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
+          <ModelPicker value={model} onChange={setModel} />
         </label>
       </div>
 

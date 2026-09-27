@@ -38,7 +38,7 @@ Browser ──▶ frontend (Next.js, :3000)
             core-api (FastAPI, :8000) ── PostgreSQL + pgvector (:5432)
                │  internal HTTP            Redis (:6379)
                ▼
-            agent-service (FastAPI, :8001) ──▶ Ollama (:11434, GPU) or Gemini / OpenAI
+            agent-service (FastAPI, :8001) ──▶ Ollama (:11434, GPU), vLLM, OpenAI or Gemini
 ```
 
 | Service | Role |
@@ -48,6 +48,7 @@ Browser ──▶ frontend (Next.js, :3000)
 | `services/agent-service/` | LLM agents: framework, components, style, page generator, learning (lessons, quizzes, challenges, grading) |
 | PostgreSQL (pgvector) | Projects, users, sessions, learning progress, component embeddings |
 | Ollama | Local LLMs (default `codellama:7b`), GPU-accelerated |
+| vLLM (optional) | Fast local serving of Hugging Face models, via `podman-compose.vllm.yml` |
 
 ## Getting started
 
@@ -74,6 +75,19 @@ Then:
 
 The first account to register takes ownership of any projects created before accounts existed.
 
+### LLM providers
+
+Pick the model per project (or on `/learn`) from one list grouped by provider. The lists are live: whatever your Ollama, vLLM server or cloud account offers appears automatically; providers that aren't set up are shown greyed out with the reason. Their status is also on the **Settings** page.
+
+| Provider | Setup |
+|---|---|
+| **Ollama** (default) | Runs in the stack. Pull models from Settings. |
+| **vLLM** | Start with the override file and point the agent-service at it:<br>`VLLM_BASE_URL=http://vllm:8000/v1` in `.env`, then<br>`podman-compose -f podman-compose.yml -f podman-compose.vllm.yml up --build`<br>Also works with any OpenAI-compatible server (LM Studio, llama.cpp server…) by setting `VLLM_BASE_URL` to it. |
+| **OpenAI** | `OPENAI_API_KEY` |
+| **Google Gemini** | `GEMINI_API_KEY` |
+
+vLLM reserves most of the GPU's memory when it starts. On a single small GPU, don't use Ollama models while vLLM runs (or lower `VLLM_GPU_MEMORY_UTILIZATION`). The default vLLM model, `Qwen/Qwen2.5-Coder-1.5B-Instruct-AWQ`, fits in 4 GB; choose a bigger one with `VLLM_MODEL` if your GPU allows.
+
 > **Model quality matters.** Small local models like `codellama:7b` often fail to produce valid pages, lessons or grades (the app shows a clear error and lets you retry). Use a larger local model or a cloud model for good results.
 
 ## Configuration
@@ -92,7 +106,9 @@ All settings are environment variables; see [`.env.example`](.env.example).
 | `REGISTER_LIMIT_PER_HOUR` | `10` | Sign-up attempts per IP per hour |
 | `FORGOT_PASSWORD_LIMIT_PER_HOUR` | `10` | Password reset requests per IP per hour |
 | `OLLAMA_DEFAULT_MODEL` | `codellama:7b` | Default local model |
-| `GEMINI_API_KEY` / `OPENAI_API_KEY` | unset | Cloud models (`gemini-*`, `gpt-*`) in the agent service; they must be available in the **agent-service** container's environment |
+| `GEMINI_API_KEY` / `OPENAI_API_KEY` | unset | Enables Gemini / OpenAI models (listed from your account) |
+| `VLLM_BASE_URL` / `VLLM_API_KEY` | unset | An OpenAI-compatible server: the bundled vLLM (`http://vllm:8000/v1`) or another one |
+| `VLLM_MODEL`, `VLLM_GPU_MEMORY_UTILIZATION`, `VLLM_MAX_MODEL_LEN`, `VLLM_DTYPE`, `HF_TOKEN` | see `.env.example` | Settings of the bundled vLLM service |
 
 Database tables and new columns are created automatically when the core-api starts; there are no manual migrations.
 
@@ -111,6 +127,7 @@ Database tables and new columns are created automatically when the core-api star
 │   ├── core-api/              FastAPI: auth.py, client_ip.py, mailer.py, routers/, models/
 │   └── agent-service/         FastAPI: agents/ (framework, component, style, page, learning), routers/
 ├── podman-compose.yml
+├── podman-compose.vllm.yml    Optional vLLM service
 └── .env.example
 ```
 

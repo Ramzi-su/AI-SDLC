@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
+import { api, ModelCatalog } from '@/lib/api';
 import RequireAuth from '@/components/auth/RequireAuth';
 import styles from './settings.module.css';
 
@@ -29,8 +29,13 @@ function Settings() {
   const [isPulling, setIsPulling] = useState(false);
   const [pullProgress, setPullProgress] = useState({ status: '', completed: 0, total: 0 });
 
-  const [geminiKey, setGeminiKey] = useState('');
-  const [openAIKey, setOpenAIKey] = useState('');
+  const [catalog, setCatalog] = useState<ModelCatalog | null>(null);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
+
+  const fetchCatalog = () =>
+    api.modelCatalog()
+      .then(result => { setCatalog(result); setCatalogError(null); })
+      .catch(err => setCatalogError(err instanceof Error ? err.message : 'Could not load providers'));
 
   // State is only set in promise callbacks, so this is safe to call from an effect.
   const fetchModels = () =>
@@ -47,11 +52,14 @@ function Settings() {
 
   useEffect(() => {
     fetchModels();
-    
-    // Load keys from local storage after mount (not available during server rendering)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setGeminiKey(localStorage.getItem('gemini_api_key') || '');
-    setOpenAIKey(localStorage.getItem('openai_api_key') || '');
+    fetchCatalog();
+    // Older versions kept API keys in browser storage (unused by the server); don't leave secrets there.
+    try {
+      localStorage.removeItem('gemini_api_key');
+      localStorage.removeItem('openai_api_key');
+    } catch {
+      // Storage unavailable: nothing to clean up.
+    }
   }, []);
 
   const handleDeleteModel = async (modelName: string) => {
@@ -121,12 +129,6 @@ function Settings() {
     } finally {
       setIsPulling(false);
     }
-  };
-
-  const saveCloudKeys = () => {
-    localStorage.setItem('gemini_api_key', geminiKey);
-    localStorage.setItem('openai_api_key', openAIKey);
-    alert('Cloud API keys saved successfully to your browser storage.');
   };
 
   const formatSize = (bytes: number) => {
@@ -248,46 +250,37 @@ function Settings() {
           </div>
         </section>
 
-        {/* Cloud Models Section */}
+        {/* Other providers: configured on the server, shown here live */}
         <section className={styles.section}>
           <div className={styles.sectionHeader}>
             <span className={styles.sectionIcon}>☁️</span>
-            <h2 className={styles.sectionTitle}>Cloud Providers</h2>
+            <h2 className={styles.sectionTitle}>vLLM &amp; Cloud Providers</h2>
           </div>
-          
+
           <div className={styles.apiForm}>
             <p className={styles.hint}>
-              API keys are stored securely in your browser&apos;s local storage and are never sent to our servers except when directly querying the cloud provider.
+              These providers are configured on the server, in the <code>.env</code> file (API keys never go to the browser).
+              Their models then appear in every model picker automatically.
             </p>
-            
-            <div className={styles.field}>
-              <label className="label">Google Gemini API Key</label>
-              <input 
-                type="password" 
-                className="input" 
-                placeholder="AIzaSy..." 
-                value={geminiKey}
-                onChange={(e) => setGeminiKey(e.target.value)}
-              />
-            </div>
-            
-            <div className={styles.field}>
-              <label className="label">OpenAI API Key</label>
-              <input 
-                type="password" 
-                className="input" 
-                placeholder="sk-..." 
-                value={openAIKey}
-                onChange={(e) => setOpenAIKey(e.target.value)}
-              />
-            </div>
 
-            <button 
-              className="btn btn-secondary"
-              onClick={saveCloudKeys}
-              style={{ marginTop: 'var(--space-sm)' }}
-            >
-              Save Cloud Keys
+            {catalogError && <p className={styles.hint}>Could not load providers: {catalogError}</p>}
+            {!catalog && !catalogError && <p className={styles.hint}>Checking providers…</p>}
+
+            {catalog && (
+              <ul className={styles.providerList}>
+                {catalog.providers.filter(p => p.id !== 'ollama').map(p => (
+                  <li key={p.id} className={styles.providerRow}>
+                    <span className={styles.providerName}>{p.label}</span>
+                    <span className={p.available ? styles.providerOk : styles.providerOff}>
+                      {p.available ? `✅ ${p.models.length} model${p.models.length === 1 ? '' : 's'}` : `⚪ ${p.error}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <button className="btn btn-ghost btn-sm" onClick={fetchCatalog} style={{ marginTop: 'var(--space-sm)' }}>
+              Check again
             </button>
           </div>
         </section>

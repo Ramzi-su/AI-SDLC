@@ -9,6 +9,16 @@ from auth import verified_user
 router = APIRouter(prefix="/api/models", tags=["Models"], dependencies=[Depends(verified_user)])
 AGENT_SERVICE_URL = os.getenv("AGENT_SERVICE_URL", "http://agent-service:8001")
 
+@router.get("/catalog")
+async def model_catalog():
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        try:
+            res = await client.get(f"{AGENT_SERVICE_URL}/internal/models/catalog")
+            res.raise_for_status()
+            return res.json()
+        except httpx.HTTPError as e:
+            raise HTTPException(status_code=502, detail=f"Agent service error: {type(e).__name__}")
+
 @router.get("")
 async def list_models():
     async with httpx.AsyncClient() as client:

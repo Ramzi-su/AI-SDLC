@@ -4,12 +4,18 @@ import json
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from services.llm_service import llm_service
 
 router = APIRouter(prefix="/internal/models", tags=["Internal Models"])
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://ollama:11434")
 
 class PullRequest(BaseModel):
     model_name: str
+
+@router.get("/catalog")
+async def model_catalog():
+    """All providers (Ollama, vLLM, OpenAI, Gemini), their status and usable model ids."""
+    return await llm_service.catalog()
 
 @router.get("")
 async def list_models():

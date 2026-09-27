@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-SDLC frontend
 
-## Getting Started
+The web app of [AI-SDLC](../README.md): project wizard, visual canvas, page-by-page builder, learning area and account pages.
 
-First, run the development server:
+Built with **Next.js 16** (App Router), **React 19** and **Zustand**. It talks only to the [core-api](../services/core-api/README.md).
+
+> This Next.js version has breaking changes from older releases. Check `node_modules/next/dist/docs/` before relying on APIs from memory (see `AGENTS.md`).
+
+## Run
+
+Normally the whole stack runs with `podman-compose up --build` from the repository root. To run only the frontend against a running core-api:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+NEXT_PUBLIC_API_URL=http://localhost:8000 npm run dev   # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Script | |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Production build (also type-checks) |
+| `npm run lint` | ESLint |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The core-api only accepts requests from `http://localhost:3000` (CORS), so keep that port in development.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Routes
 
-## Learn More
+| Route | Page |
+|---|---|
+| `/` | Landing page, your projects |
+| `/project/new` | New project wizard |
+| `/project/[id]` | Reopen a saved project where you left it |
+| `/learn` | Standalone learning: tutor, quizzes, challenges |
+| `/settings` | Manage local Ollama models |
+| `/login`, `/register` | Sign in / create an account (email + password, Google, GitHub) |
+| `/verify-email` | Target of the email confirmation link |
+| `/forgot-password` | Password reset with a 6-digit code |
 
-To learn more about Next.js, take a look at the following resources:
+Every route except the landing and account pages requires a signed-in user with a confirmed email (`components/auth/RequireAuth.tsx`).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Code map
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+app/                     Routes (see above)
+components/
+  wizard/                ProjectWizard (steps + autosave), ComponentStep (canvas: drag & drop,
+                         draw, rectangle, ellipse, eraser, undo/redo), ComponentEditor,
+                         PageBuildStep (generate → preview → approve / redo), palette.ts
+  learn/                 LearnPanel with LessonView, TutorChat, QuizView, ChallengeView; PointsBadge
+  auth/                  AuthForm, RequireAuth, VerifyEmailGate, UserMenu, password reset
+  ProjectList.tsx        Saved projects on the home page
+lib/
+  api.ts                 Typed API client: session cookies, silent token refresh and retry
+  sketch.ts              Freehand/shape geometry: simplification, paths, hit-testing
+  projectPersistence.ts  What is saved to the server and how a project is restored
+store/
+  projectStore.ts        Wizard, canvas (with undo/redo history) and page generation state
+  authStore.ts           Signed-in user and session status
+```
 
-## Deploy on Vercel
+## How sessions work here
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The API sets HTTP-only cookies, so the frontend never sees tokens. `lib/api.ts` sends them with `credentials: 'include'`. When a request gets a 401 because the 15-minute access token expired, it calls `/api/auth/refresh` once (shared between concurrent requests) and retries. If that fails, the user is sent to sign in.

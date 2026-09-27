@@ -10,7 +10,7 @@ export const PERSISTED_KEYS = [
   'currentStep', 'pendingConfirmation',
   'frameworkData', 'layoutData', 'styleData',
   'pages', 'activePageId',
-  'modelType', 'selectedModel',
+  'selectedModel',
 ] as const satisfies readonly (keyof ProjectStore)[];
 
 export type WizardState = Pick<ProjectStore, (typeof PERSISTED_KEYS)[number]>;

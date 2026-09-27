@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useProjectStore } from '@/store/projectStore';
-import { api } from '@/lib/api';
+import ModelPicker from '@/components/ModelPicker';
 import styles from './ProjectStep.module.css';
 
 interface ProjectStepProps {
@@ -37,39 +36,7 @@ const AI_INTEGRATION_OPTIONS = ['Let AI Decide', 'None', 'RAG (Vector Search)', 
 const GENERATION_MODE_OPTIONS = ['Full Auto', 'Interactive (Step-by-step validation)'];
 
 export default function ProjectStep({ onSubmit }: ProjectStepProps) {
-  const { projectName, projectDescription, projectType, frontPref, backPref, dbPref, architecturePref, complexityPref, codingLevelPref, aiIntegrationPref, generationModePref, selectedModel, modelType, setProjectInfo, setSelectedModel, setModelType, isLoading, learningMode, setLearningMode } = useProjectStore();
-
-  const [localModels, setLocalModels] = useState<Array<{name: string, size: number}>>([]);
-  const [isLoadingModels, setIsLoadingModels] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    const fetchModels = async () => {
-      try {
-        const res = await api.listModels();
-        if (!mounted) return;
-        
-        const models = (res.models as unknown as Array<{ name: string; size: number }>) || [];
-        setLocalModels(models);
-        
-        const currentModel = useProjectStore.getState().selectedModel;
-        const currentType = useProjectStore.getState().modelType;
-        
-        if (currentType === 'local' && models.length > 0) {
-          const exists = models.some(m => m.name === currentModel);
-          if (!exists) {
-            useProjectStore.getState().setSelectedModel(models[0].name);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to fetch local models:', err);
-      } finally {
-        if (mounted) setIsLoadingModels(false);
-      }
-    };
-    fetchModels();
-    return () => { mounted = false; };
-  }, []);
+  const { projectName, projectDescription, projectType, frontPref, backPref, dbPref, architecturePref, complexityPref, codingLevelPref, aiIntegrationPref, generationModePref, selectedModel, setProjectInfo, setSelectedModel, isLoading, learningMode, setLearningMode } = useProjectStore();
 
   const isValid = projectName.trim().length > 0 && projectDescription.trim().length >= 10;
 
@@ -132,54 +99,8 @@ export default function ProjectStep({ onSubmit }: ProjectStepProps) {
         </div>
 
         <div className={styles.field}>
-          <label className="label">AI Provider</label>
-          <div style={{ display: 'flex', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
-            <button
-              className={`btn ${modelType === 'local' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => {
-                setModelType('local');
-                setSelectedModel(localModels.length > 0 ? localModels[0].name : '');
-              }}
-              style={{ flex: 1 }}
-            >
-              Local (Ollama)
-            </button>
-            <button
-              className={`btn ${modelType === 'cloud' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => {
-                setModelType('cloud');
-                setSelectedModel('gemini-1.5-pro');
-              }}
-              style={{ flex: 1 }}
-            >
-              Cloud
-            </button>
-          </div>
-          
-          <label className="label">AI Model</label>
-          <select 
-            className="input" 
-            value={selectedModel} 
-            onChange={(e) => setSelectedModel(e.target.value)}
-            disabled={modelType === 'local' && localModels.length === 0}
-          >
-            {modelType === 'cloud' ? (
-              <>
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                <option value="gpt-4o">GPT-4o</option>
-              </>
-            ) : (
-              isLoadingModels ? (
-                <option value="">Loading models...</option>
-              ) : localModels.length > 0 ? (
-                localModels.map(m => (
-                  <option key={m.name} value={m.name}>{m.name}</option>
-                ))
-              ) : (
-                <option value="">No models found (Go to Settings to pull)</option>
-              )
-            )}
-          </select>
+          <label className="label" htmlFor="ai-model">AI Model</label>
+          <ModelPicker id="ai-model" value={selectedModel} onChange={setSelectedModel} />
         </div>
 
         <div className={styles.field}>

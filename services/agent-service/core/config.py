@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     ollama_default_model: str = "codellama:7b"
     gemini_api_key: str = ""
     openai_api_key: str = ""
+    # Any OpenAI-compatible server (vLLM, LM Studio, llama.cpp...), e.g. http://vllm:8000/v1
+    vllm_base_url: str = ""
+    vllm_api_key: str = ""
 
     class Config:
         env_file = ".env"

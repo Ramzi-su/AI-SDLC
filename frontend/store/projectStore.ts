@@ -144,7 +144,6 @@ export interface ProjectStore {
   pendingConfirmation: WizardStep | null;
 
   // Selected model
-  modelType: 'local' | 'cloud';
   selectedModel: string;
 
   // Actions
@@ -162,7 +161,6 @@ export interface ProjectStore {
   setGenerationData: (data: GenerationData) => void;
   setPageGeneration: (generation: PageGeneration) => void;
   setPendingConfirmation: (step: WizardStep | null) => void;
-  setModelType: (type: 'local' | 'cloud') => void;
   setSelectedModel: (model: string) => void;
   updateColor: (index: number, value: string) => void;
   
@@ -207,7 +205,6 @@ const INITIAL_STATE = {
   generationData: null,
   pageGenerations: {},
   pendingConfirmation: null,
-  modelType: 'local' as 'local' | 'cloud',
   selectedModel: 'codellama:7b',
   pages: [{ id: 'home', name: 'Home', locked: false, components: [] }],
   activePageId: 'home',
@@ -250,7 +247,6 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     pageGenerations: { ...state.pageGenerations, [generation.page_id]: generation }
   })),
   setPendingConfirmation: (step) => set({ pendingConfirmation: step }),
-  setModelType: (type) => set({ modelType: type, selectedModel: '' }),
   setSelectedModel: (model) => set({ selectedModel: model }),
 
   updateColor: (index, value) => {

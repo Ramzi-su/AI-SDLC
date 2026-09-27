@@ -75,9 +75,16 @@ services:
       - "8001:8001"
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_DEFAULT_MODEL=codellama:7b
+      - OLLAMA_DEFAULT_MODEL=${OLLAMA_DEFAULT_MODEL:-codellama:7b}
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/sdlc_db
       - REDIS_URL=redis://redis:6379/0
+      # Optional cloud models (listed live from each provider once its key is set).
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # Optional OpenAI-compatible server: the vLLM service from podman-compose.vllm.yml
+      # (http://vllm:8000/v1), or any other (LM Studio, llama.cpp server...).
+      - VLLM_BASE_URL=${VLLM_BASE_URL:-}
+      - VLLM_API_KEY=${VLLM_API_KEY:-}
     depends_on:
       - ollama
       - postgres

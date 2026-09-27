@@ -9,11 +9,18 @@ from agents.style_agent import style_agent
 from agents.generator_agent import generator_agent
 from agents.page_agent import page_agent
 from routers import models, learn
+from fastapi.responses import JSONResponse
+from services.llm_service import LLMNotConfiguredError
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Agent Worker Service")
+
+@app.exception_handler(LLMNotConfiguredError)
+async def llm_not_configured(_request, exc: LLMNotConfiguredError):
+    # A clear, fixable message instead of a generic 500.
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
 
 from redis_client import test_redis_connection
 

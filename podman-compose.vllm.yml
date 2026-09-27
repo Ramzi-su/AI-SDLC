@@ -1,0 +1,37 @@
+# Optional vLLM server, added on top of the main stack:
+#
+#   podman-compose -f podman-compose.yml -f podman-compose.vllm.yml up --build
+#
+# and set VLLM_BASE_URL=http://vllm:8000/v1 in .env so the agent-service uses it.
+#
+# vLLM reserves most of the GPU memory at startup (VLLM_GPU_MEMORY_UTILIZATION). If Ollama shares
+# the same GPU, don't use Ollama models while vLLM runs, or lower that value.
+# The default model is small enough for a 4 GB GPU; pick a bigger one (VLLM_MODEL) if you have the memory.
+services:
+  vllm:
+    image: docker.io/vllm/vllm-openai:latest
+    command:
+      - ${VLLM_MODEL:-Qwen/Qwen2.5-Coder-1.5B-Instruct-AWQ}
+      - --gpu-memory-utilization
+      - "${VLLM_GPU_MEMORY_UTILIZATION:-0.85}"
+      - --max-model-len
+      - "${VLLM_MAX_MODEL_LEN:-8192}"
+      - --dtype
+      - ${VLLM_DTYPE:-auto}
+    environment:
+      # Only needed for gated models on Hugging Face.
+      - HF_TOKEN=${HF_TOKEN:-}
+    volumes:
+      - hf_cache:/root/.cache/huggingface:Z
+    # PyTorch workers share memory; the container default (64 MB) is too small.
+    shm_size: 4gb
+    security_opt:
+      - label=disable
+    devices:
+      - nvidia.com/gpu=all
+    # Not published on the host: only the agent-service talks to it.
+    networks:
+      - sdcl_network
+
+volumes:
+  hf_cache:

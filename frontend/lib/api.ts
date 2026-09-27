@@ -105,6 +105,22 @@ async function request<T>(endpoint: string, options: RequestOptions = {}, isRetr
   return response.json();
 }
 
+// ---------- Models ----------
+
+export interface ModelProvider {
+  id: 'ollama' | 'vllm' | 'openai' | 'gemini';
+  label: string;
+  configured: boolean;
+  available: boolean;
+  error: string | null;
+  models: { id: string; label: string }[];
+}
+
+export interface ModelCatalog {
+  providers: ModelProvider[];
+  default_model: string;
+}
+
 // ---------- Learning ----------
 
 export type ChallengeKind = 'complete' | 'modify' | 'scratch';
@@ -295,6 +311,9 @@ export const api = {
     request<LearningProgress>(`/api/learn/progress${projectId ? `?project_id=${projectId}` : ''}`),
 
   // Models
+  // Every provider (Ollama, vLLM, OpenAI, Gemini), whether it is usable, and its models.
+  modelCatalog: () => request<ModelCatalog>('/api/models/catalog'),
+
   listModels: () =>
     request<{ models: Array<Record<string, unknown>> }>('/api/models'),
 
