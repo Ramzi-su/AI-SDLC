@@ -40,7 +40,8 @@ async def run_agent(req: AgentRequest, db: AsyncSession = Depends(get_db), user:
         "model": req.model
     }
 
-    async with httpx.AsyncClient(timeout=300.0) as client:
+    # Same budget as agent-service gives Ollama (600 s): a cold model load alone can take ~5 min
+    async with httpx.AsyncClient(timeout=600.0) as client:
         try:
             response = await client.post(f"{AGENT_SERVICE_URL}/internal/run", json=payload)
             response.raise_for_status()

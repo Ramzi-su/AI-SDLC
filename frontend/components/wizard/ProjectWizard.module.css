@@ -167,3 +167,8 @@
 .saveError {
   color: var(--color-error);
 }
+
+.previousStep {
+  align-self: flex-start;
+  margin-bottom: var(--space-md, 1rem);
+}

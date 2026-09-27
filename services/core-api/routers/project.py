@@ -32,6 +32,17 @@ async def list_projects(db: AsyncSession = Depends(get_db), user: User = Depends
 async def get_project(project_id: str, db: AsyncSession = Depends(get_db), user: User = Depends(verified_user)):
     return await get_owned_project(db, project_id, user)
 
+@router.put("/{project_id}", response_model=ProjectResponse)
+async def update_project(project_id: str, req: ProjectCreateRequest, db: AsyncSession = Depends(get_db), user: User = Depends(verified_user)):
+    """Edit the project details (wizard step 1 revisited) instead of creating a duplicate."""
+    project = await get_owned_project(db, project_id, user)
+    project.name = req.name
+    project.description = req.description
+    project.project_type = req.project_type
+    await db.commit()
+    await db.refresh(project)
+    return project
+
 @router.put("/{project_id}/state")
 async def save_wizard_state(project_id: str, state: dict, db: AsyncSession = Depends(get_db), user: User = Depends(verified_user)):
     project = await get_owned_project(db, project_id, user)

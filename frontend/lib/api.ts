@@ -238,6 +238,9 @@ export const api = {
   createProject: (data: { name: string; description: string; project_type: string }) =>
     request('/api/projects', { method: 'POST', body: data }),
 
+  updateProject: (id: string, data: { name: string; description: string; project_type: string }) =>
+    request(`/api/projects/${id}`, { method: 'PUT', body: data }),
+
   listProjects: () =>
     request<ProjectSummary[]>('/api/projects'),
 

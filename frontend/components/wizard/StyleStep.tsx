@@ -2,6 +2,7 @@
 
 import { useProjectStore } from '@/store/projectStore';
 import styles from './StyleStep.module.css';
+import AgentWaiting from './AgentWaiting';
 
 interface StyleStepProps {
   onRegenerate: (feedback?: string) => void;
@@ -12,9 +13,7 @@ export default function StyleStep({ onRegenerate }: StyleStepProps) {
 
   if (!styleData && !isLoading) {
     return (
-      <div className={styles.empty}>
-        <p>Waiting for Style Agent...</p>
-      </div>
+      <AgentWaiting agentName="Style Agent" className={styles.empty} onRetry={() => onRegenerate()} />
     );
   }
 

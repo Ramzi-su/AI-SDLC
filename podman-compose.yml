@@ -125,6 +125,9 @@ services:
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      # Keep models loaded between requests: the default unloads them after 5 idle
+      # minutes, and reloading took ~5 min here (longer than the API timeout)
+      - OLLAMA_KEEP_ALIVE=24h
     networks:
       - sdcl_network
   redis:

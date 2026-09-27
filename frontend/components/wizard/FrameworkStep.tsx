@@ -2,6 +2,7 @@
 
 import { useProjectStore, FrameworkData } from '@/store/projectStore';
 import styles from './FrameworkStep.module.css';
+import AgentWaiting from './AgentWaiting';
 
 interface FrameworkStepProps {
   onRegenerate: (feedback?: string) => void;
@@ -26,9 +27,7 @@ export default function FrameworkStep({ onRegenerate }: FrameworkStepProps) {
 
   if (!frameworkData && !isLoading) {
     return (
-      <div className={styles.empty}>
-        <p>Waiting for Framework Agent...</p>
-      </div>
+      <AgentWaiting agentName="Framework Agent" className={styles.empty} onRetry={() => onRegenerate()} />
     );
   }
 

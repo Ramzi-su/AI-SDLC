@@ -11,8 +11,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // suppressHydrationWarning: browser extensions (e.g. UI.Vision/Kantu) add attributes
+  // to <html> before React loads; it only covers this element's own attributes.
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
         <div id="app-root" style={{ position: 'relative', zIndex: 1 }}>
           {children}

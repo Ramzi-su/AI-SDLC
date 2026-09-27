@@ -183,6 +183,20 @@ export default function ProjectWizard() {
     store.setPendingConfirmation(null);
   };
 
+  // Back to the previous step. Its result is kept; its confirmation is shown again,
+  // otherwise an already-confirmed step would have no way to move forward.
+  const handlePrevious = () => {
+    if (currentIndex <= 0) return;
+    const prev = STEPS[currentIndex - 1];
+    const hasResult =
+      (prev === 'framework' && store.frameworkData) ||
+      (prev === 'components' && store.layoutData) ||
+      (prev === 'style' && store.styleData);
+    store.setError(null);
+    store.setPendingConfirmation(hasResult ? prev : null);
+    store.setCurrentStep(prev);
+  };
+
   const handleGeneratePage = async (pageId: string, feedback?: string) => {
     if (!store.projectId) return;
     store.setLoading(true);
@@ -227,11 +241,13 @@ export default function ProjectWizard() {
       const prefText = `\n\n[Tech Preferences: Frontend: ${store.frontPref}, Backend: ${store.backPref}, DB: ${store.dbPref}, Architecture: ${store.architecturePref}, Complexity: ${store.complexityPref}, Audience Coding Level: ${store.codingLevelPref}, AI Integration: ${store.aiIntegrationPref}, Generation Mode: ${store.generationModePref}]`;
       const finalDescription = store.projectDescription + prefText;
 
-      const project = await api.createProject({
-        name: store.projectName,
-        description: finalDescription,
-        project_type: store.projectType,
-      }) as Record<string, unknown>;
+      const details = { name: store.projectName, description: finalDescription, project_type: store.projectType };
+      // Back on step 1 after the project exists: update it instead of creating a duplicate
+      const existingId = useProjectStore.getState().projectId;
+      const project = (existingId
+        ? await api.updateProject(existingId, details)
+        : await api.createProject(details)) as Record<string, unknown>;
+      store.setPendingConfirmation(null);
 
       store.setProjectId(project.id as string);
       store.setCurrentStep('framework');
@@ -301,6 +317,17 @@ export default function ProjectWizard() {
           </div>
         )}
 
+        {currentIndex > 0 && (
+          <button
+            className={`btn btn-ghost btn-sm ${styles.previousStep}`}
+            onClick={handlePrevious}
+            disabled={store.isLoading}
+            title={store.isLoading ? 'Wait for the agent to finish' : undefined}
+          >
+            ← Previous step
+          </button>
+        )}
+
         <div className={styles.stepContent}>
           {store.currentStep === 'project' && (
             <ProjectStep onSubmit={handleCreateProject} />
@@ -323,7 +350,7 @@ export default function ProjectWizard() {
 
           {store.currentStep === 'components' && (
             <>
-              <ComponentStep />
+              <ComponentStep onRetry={() => handleRunAgent('components')} />
               {store.pendingConfirmation === 'components' && store.layoutData && (
                 <ConfirmationGate
                   title="Confirm Site Builder"

@@ -6,44 +6,6 @@ export interface PaletteCategory {
   items: ComponentData[];
 }
 
-export const COMPONENT_ICONS: Record<string, string> = {
-  // Layout
-  navbar: '🔗', hero: '🦸', footer: '🔻', sidebar: '📑',
-  header: '📐', section: '▦', container: '📦', grid: '⊞',
-  columns: '▥', spacer: '↕️', wrapper: '🔲', split_pane: '🗂️', masonry: '🧱',
-  // Navigation
-  breadcrumb: '🗺️', tabs: '📂', pagination: '📄', stepper: '🪜',
-  menu: '☰', drawer: '🗄️', bottomnav: '⬇️', toc: '📑', mega_menu: '🗃️',
-  // Content Sections
-  features: '⭐', cards: '🃏', testimonials: '💬', pricing: '💰',
-  cta: '📣', faq: '❓', timeline: '📅', team: '👥',
-  stats: '📈', newsletter: '📰', banner: '🏴', logo_cloud: '☁️', blog_post: '📝',
-  // Data Display
-  table: '📊', list: '📋', accordion: '🪗', tree: '🌳',
-  description: '📝', tag: '🏷️', tooltip: '💡', popover: '🗨️', kanban: '📋', data_grid: '🧮',
-  // Media
-  image: '🖼️', gallery: '🎞️', video: '🎥', carousel: '🎠',
-  audio: '🔊', map: '🗺️', embed: '🔗', avatar: '👤',
-  icon: '🎨', lottie: '✨', '3d_model': '🧊',
-  // Forms
-  form: '📋', input: '⌨️', textarea: '📝', dropdown: '🔽',
-  checkbox: '☑️', radio: '🔘', toggle: '🔀', slider: '🎚️',
-  datepicker: '📅', fileupload: '📎', search: '🔍', rating: '⭐',
-  colorpicker: '🎨', rich_text: '✍️', autocomplete: '🪄',
-  // Feedback
-  alert: '⚠️', toast: '🍞', modal: '🪟', dialog: '💬',
-  progress: '📊', spinner: '🔄', skeleton: '💀', empty_state: '🫥',
-  // Commerce
-  product_card: '🛍️', cart: '🛒', checkout: '💳', price_tag: '💲',
-  review: '⭐', wishlist: '❤️', promo_code: '🎟️',
-  // Interactive / Social
-  button: '🔘', link: '🔗', badge: '🏷️', chip: '🏷️',
-  heading: 'H', paragraph: '¶', divider: '➖', code_block: '💻',
-  blockquote: '❝', scroll_area: '📜', social_share: '🔗', comments: '💬',
-  // Charts
-  bar_chart: '📊', line_chart: '📈', pie_chart: '🥧',
-};
-
 export const PALETTE_CATEGORIES: PaletteCategory[] = [
   {
     label: 'Basic Layout', icon: '📐',

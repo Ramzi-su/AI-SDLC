@@ -107,7 +107,7 @@ export default function ComponentEditor() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <div className={styles.field}>
-          <label className={styles.label}>Width (px)</label>
+          <label className={styles.label}>Width (of 1000)</label>
           <input 
             className={styles.input} 
             type="number"
@@ -116,7 +116,7 @@ export default function ComponentEditor() {
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Height (px)</label>
+          <label className={styles.label}>Height (of 600)</label>
           <input 
             className={styles.input} 
             type="number"
@@ -128,7 +128,7 @@ export default function ComponentEditor() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         <div className={styles.field}>
-          <label className={styles.label}>Position X</label>
+          <label className={styles.label}>Position X (0–1000)</label>
           <input 
             className={styles.input} 
             type="number"
@@ -137,7 +137,7 @@ export default function ComponentEditor() {
           />
         </div>
         <div className={styles.field}>
-          <label className={styles.label}>Position Y</label>
+          <label className={styles.label}>Position Y (0–600)</label>
           <input 
             className={styles.input} 
             type="number"

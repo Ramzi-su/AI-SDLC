@@ -111,7 +111,8 @@
 }
 
 .categoryIcon {
-  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
 }
 
 .categoryLabel {
@@ -176,9 +177,10 @@
 }
 
 .paletteItemIcon {
-  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 24px;
-  text-align: center;
   flex-shrink: 0;
 }
 
@@ -313,7 +315,9 @@
 }
 
 .canvasItemIcon {
-  font-size: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .canvasItemDetails {
@@ -397,6 +401,9 @@
 }
 
 .toolBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   background: none;
   border: none;
   padding: 4px 10px;
