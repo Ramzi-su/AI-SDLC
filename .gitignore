@@ -1,0 +1,37 @@
+# Secrets and local configuration (JWT_SECRET, SMTP password, OAuth secrets...).
+# .env.example documents the settings and is committed.
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node / Next.js (frontend/.gitignore covers the frontend in detail)
+node_modules/
+.next/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# Keys and certificates
+*.pem
+*.key
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db

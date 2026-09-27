@@ -1,0 +1,184 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-lg);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.header {
+  margin-bottom: var(--space-2xl);
+}
+
+.title {
+  font-size: 2.5rem;
+  background: linear-gradient(to right, #FFFFFF, var(--color-text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xs);
+}
+
+.titleIcon {
+  font-size: 2rem;
+  -webkit-text-fill-color: initial;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  font-size: 1.125rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.section {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sectionIcon {
+  font-size: 1.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.modelList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  max-height: 300px;
+  overflow-y: auto;
+  padding-right: var(--space-sm);
+}
+
+.modelItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+}
+
+.modelItem:hover {
+  border-color: var(--color-border-hover);
+}
+
+.modelInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.modelName {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+.modelSize {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.emptyState {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: var(--space-xl) 0;
+  font-style: italic;
+}
+
+.pullSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.pullInputGroup {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.progressContainer {
+  margin-top: var(--space-md);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  border: 1px solid var(--color-border);
+}
+
+.progressInfo {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  margin-bottom: var(--space-sm);
+}
+
+.progressStatus {
+  color: var(--color-secondary);
+  font-weight: 500;
+}
+
+.progressPercentage {
+  font-family: var(--font-mono);
+  color: var(--color-text-secondary);
+}
+
+.progressBarTrack {
+  height: 8px;
+  background: var(--color-surface-hover);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.progressBarFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+  transition: width 0.2s ease;
+}
+
+.apiForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}

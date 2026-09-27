@@ -1,0 +1,67 @@
+.overlay {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--space-lg);
+  z-index: var(--z-sticky);
+  animation: fadeInUp 0.4s ease;
+}
+
+.gate {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  box-shadow:
+    0 -8px 32px rgba(0, 0, 0, 0.4),
+    0 0 40px var(--color-primary-glow);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-md);
+}
+
+.gateIcon {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.gateTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.gateDesc {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  max-width: 500px;
+  line-height: 1.5;
+}
+
+.gateActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.feedbackSection {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  margin-top: var(--space-sm);
+}
+
+.feedbackActions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+}

@@ -1,0 +1,139 @@
+# Run with: podman-compose up --build
+# Requires: podman, podman-compose
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Containerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - core-api
+    volumes:
+      - ./frontend:/app:Z
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - sdcl_network
+
+  core-api:
+    build:
+      context: ./services/core-api
+      dockerfile: Containerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/sdlc_db
+      - AGENT_SERVICE_URL=http://agent-service:8001
+      - REDIS_URL=redis://redis:6379/0
+      # Accounts: where the browser reaches the frontend and this API (used for OAuth redirects).
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:3000}
+      - API_PUBLIC_URL=${API_PUBLIC_URL:-http://localhost:8000}
+      - COOKIE_SECURE=${COOKIE_SECURE:-false}
+      # Signs session JWTs. Set a long random value (e.g. `openssl rand -base64 48`); without it,
+      # a random secret is generated at startup and everyone is signed out on each restart.
+      - JWT_SECRET=${JWT_SECRET:-}
+      # Behind a reverse proxy (nginx, Traefik, a load balancer...): its IPs or CIDR ranges, comma-separated,
+      # so login limits apply to the real client address from X-Forwarded-For. Leave empty when
+      # the API is reached directly: the header is then ignored, so it can't be forged.
+      - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+      # Sign-up attempts allowed per IP address per hour (keep it generous if classrooms share one IP).
+      - REGISTER_LIMIT_PER_HOUR=${REGISTER_LIMIT_PER_HOUR:-10}
+      # "Forgot password" requests allowed per IP address per hour.
+      - FORGOT_PASSWORD_LIMIT_PER_HOUR=${FORGOT_PASSWORD_LIMIT_PER_HOUR:-10}
+      # Optional: Google / GitHub sign-in buttons appear only when both values are set.
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID:-}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET:-}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID:-}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET:-}
+      # Optional: outgoing email for verification and password reset links.
+      # Without SMTP_HOST, the emails (with their links) are printed to this service's log.
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_FROM=${SMTP_FROM:-AI-SDLC <no-reply@localhost>}
+      - SMTP_SECURITY=${SMTP_SECURITY:-starttls}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./services/core-api:/app:Z
+    networks:
+      - sdcl_network
+
+  agent-service:
+    build:
+      context: ./services/agent-service
+      dockerfile: Containerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - OLLAMA_DEFAULT_MODEL=codellama:7b
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/sdlc_db
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - ollama
+      - postgres
+      - redis
+    volumes:
+      - ./services/agent-service:/app:Z
+    networks:
+      - sdcl_network
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=sdlc_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data:Z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sdlc_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sdcl_network
+
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama:Z
+    security_opt:
+      - label=disable
+    devices:
+      - nvidia.com/gpu=all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+    networks:
+      - sdcl_network
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data:Z
+    networks:
+      - sdcl_network
+
+volumes:
+  pg_data:
+  ollama_data:
+  redis_data:
+
+networks:
+  sdcl_network:
+    driver: bridge

@@ -1,0 +1,88 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md) var(--space-3xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.back {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+}
+
+.back:hover {
+  color: var(--color-text);
+}
+
+.title {
+  flex: 1;
+  font-size: 1.75rem;
+  font-weight: 800;
+}
+
+.intro {
+  color: var(--color-text-secondary);
+  max-width: 720px;
+  line-height: 1.6;
+}
+
+.settings {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+}
+
+.settings label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  min-width: 200px;
+}
+
+.history h2 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin-bottom: var(--space-sm);
+}
+
+.history ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.history li {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 0.875rem;
+}
+
+.done {
+  color: var(--color-success);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pending {
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}

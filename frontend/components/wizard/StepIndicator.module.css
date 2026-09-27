@@ -1,0 +1,86 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  position: relative;
+}
+
+.indicator {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all var(--transition-normal);
+  position: relative;
+  z-index: 2;
+}
+
+.stepNum {
+  font-family: var(--font-heading);
+}
+
+.stepLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.connector {
+  position: absolute;
+  left: 15px;
+  top: 40px;
+  width: 2px;
+  height: 24px;
+  background: var(--color-border);
+  z-index: 1;
+  transition: background var(--transition-normal);
+}
+
+/* States */
+.completed .indicator {
+  background: var(--color-success);
+  color: var(--color-text-inverse);
+  box-shadow: 0 0 12px rgba(0, 230, 138, 0.3);
+}
+
+.completed .stepLabel {
+  color: var(--color-success);
+}
+
+.completed .connector {
+  background: var(--color-success);
+}
+
+.current .indicator {
+  background: var(--color-primary);
+  color: white;
+  box-shadow: 0 0 16px var(--color-primary-glow);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.current .stepLabel {
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.upcoming .indicator {
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.upcoming .stepLabel {
+  color: var(--color-text-muted);
+}

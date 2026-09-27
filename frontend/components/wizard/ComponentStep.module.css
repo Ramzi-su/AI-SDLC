@@ -1,0 +1,507 @@
+.container {
+  display: flex;
+  height: calc(100vh - 60px);
+  min-height: 800px;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Palette (Left Panel) */
+.palette {
+  width: 280px;
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.paletteHeader {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.paletteTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Search Box */
+.searchBox {
+  position: relative;
+  margin-top: var(--space-sm);
+}
+
+.searchIcon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 7px 10px 7px 30px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* Category Blocks */
+.paletteList {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 32px;
+}
+
+.categoryBlock {
+  border-radius: 6px;
+  /* Removed overflow: hidden so shadows can be seen */
+}
+
+.categoryHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: inherit;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  border-radius: 6px;
+}
+
+.categoryHeader:hover {
+  color: var(--color-text);
+  background: var(--color-bg-secondary);
+  border-color: var(--color-primary-subtle);
+}
+
+.categoryIcon {
+  font-size: 0.875rem;
+}
+
+.categoryLabel {
+  flex: 1;
+  text-align: left;
+}
+
+.categoryCount {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  background: var(--color-bg);
+  padding: 1px 6px;
+  border-radius: 9999px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.categoryChevron {
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+.chevronCollapsed {
+  transform: rotate(-90deg);
+}
+
+.categoryItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 4px 12px 4px;
+  animation: catFadeIn 0.15s ease;
+}
+
+@keyframes catFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.paletteItem {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.paletteItem:hover {
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+}
+
+.paletteItem:active {
+  cursor: grabbing;
+}
+
+.paletteItemIcon {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.paletteItemName {
+  font-size: 0.8125rem;
+  font-weight: 500;
+}
+
+/* Canvas (Center Panel) */
+.workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg);
+}
+
+.tabsBar {
+  display: flex;
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 var(--space-md);
+  align-items: center;
+  gap: 8px;
+}
+
+.tab {
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: var(--color-text);
+}
+
+.activeTab {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+.addPageBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.addPageBtn:hover {
+  color: var(--color-text);
+}
+
+.lockBtn {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s;
+}
+
+.lockBtn:hover {
+  background-color: var(--color-bg);
+}
+
+.canvas {
+  flex: 1;
+  overflow: auto;
+  background-color: var(--color-bg-secondary);
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 20px 20px;
+  position: relative;
+}
+
+.canvasEmpty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  border: 2px dashed var(--color-border);
+  border-radius: 8px;
+  margin: var(--space-md);
+}
+
+.canvasItem {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-md);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  cursor: pointer;
+  touch-action: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.canvasItem:hover {
+  border-color: var(--color-text-muted);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.selectedCanvasItem {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.canvasItemContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.canvasItemIcon {
+  font-size: 1.5rem;
+}
+
+.canvasItemDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.canvasItemName {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.canvasItemType {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.canvasItemActions {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.resizeHandle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(135deg, transparent 50%, var(--color-primary) 50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.canvasItem:hover .resizeHandle {
+  opacity: 0.8;
+}
+
+.resizeHandle:hover {
+  opacity: 1 !important;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.iconBtn:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.iconBtnDanger:hover {
+  color: var(--color-error);
+}
+
+/* Empty State / Loading */
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--color-text-muted);
+}
+
+/* Freehand drawing */
+.toolGroup {
+  display: flex;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.toolBtn {
+  background: none;
+  border: none;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toolBtn + .toolBtn {
+  border-left: 1px solid var(--color-border);
+}
+
+.toolBtn:hover:not(:disabled) {
+  color: var(--color-text);
+}
+
+.toolBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolBtnActive {
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+}
+
+.canvasDrawing {
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.strokePreview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.strokePreview path {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sketchItem {
+  border-color: transparent;
+  box-shadow: none;
+  padding: var(--space-sm);
+  justify-content: center;
+  align-items: center;
+}
+
+.sketchItem:hover {
+  border-color: var(--color-border);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.sketchItem.selectedCanvasItem {
+  border-color: var(--color-primary);
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.sketchShape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.sketchShape path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.sketchShape path.sketchClosed {
+  fill: currentColor;
+  fill-opacity: 0.2;
+}
+
+.sketchItem .canvasItemContent {
+  position: relative;
+  justify-content: center;
+}
+
+.canvasErasing {
+  /* Circle matching the eraser's hit radius. */
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Ccircle cx='10' cy='10' r='8' fill='rgba(255,255,255,0.15)' stroke='%23FF4D6A' stroke-width='1.5'/%3E%3C/svg%3E") 10 10, cell;
+  touch-action: none;
+}
+
+.lockBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
